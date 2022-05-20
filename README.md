@@ -1,7 +1,7 @@
 # 项目总述
 * 很多人说华夏ERP（英文名：jshERP）是目前人气领先的国产ERP系统
 * 虽然目前只有进销存+财务+生产的功能，但后面将会推出ERP的全部功能，有兴趣请帮点一下 **Star** 哦
-* **官网URL：http://www.huaxiaerp.com  商务合作或技术交流，请联系QQ：752718920**
+* **官网地址：http://www.huaxiaerp.com  商务合作或技术交流，请联系QQ：752718920**
 * 欢迎加入华夏ERP交流QQ群(入群帮安装)，群3：805736336(满)、群4：146571538
 * 平台地址：http://cloud.huaxiaerp.vip 欢迎大家注册租户进行使用
 * 系统默认租户账号：jsh，默认超管账户：admin，默认密码均为：123456
@@ -51,25 +51,25 @@
 
 # 系统美图
 * 首页
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0527/231344_ef2d6554_852955.png "首页.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2022/0520/235430_ff5f9618_852955.png "首页.png")
 * 零售管理
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0527/231359_889404f3_852955.png "零售管理.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2022/0520/235442_214b9fc0_852955.png "零售管理.png")
 * 采购管理
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0527/231414_85757561_852955.png "采购管理.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2022/0520/235643_c87b3d02_852955.png "采购管理.png")
 * 销售管理
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0527/231437_d2308621_852955.png "销售管理.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2022/0520/235631_01a92e1f_852955.png "销售管理.png")
 * 仓库管理
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0527/231446_6a6455f8_852955.png "仓库管理.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2022/0520/235657_99057159_852955.png "仓库管理.png")
 * 财务管理
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0527/231456_82f4616b_852955.png "财务管理.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2022/0520/235708_086379f8_852955.png "财务管理.png")
 * 报表查询
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0527/231506_9a986d5c_852955.png "报表查询.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2022/0520/235722_a26af3e8_852955.png "报表查询.png")
 * 商品管理
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0527/231527_23a26826_852955.png "商品管理.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2022/0520/235905_5ec11112_852955.png "商品管理.png")
 * 基本资料
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0527/231538_0be9ad14_852955.png "基本资料.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2022/0520/235919_92d78bc3_852955.png "基本资料.png")
 * 系统管理
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0527/231547_3110acd3_852955.png "系统管理.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2022/0520/235815_b139e426_852955.png "系统管理.png")
 
 # 捐赠
 开源不易，坚持更难！如果您觉得华夏ERP不错，可以捐赠请作者喝杯咖啡~，在此表示感谢^_^。
