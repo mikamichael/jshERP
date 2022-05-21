@@ -197,7 +197,11 @@
                 {{model.number}}
               </a-form-item>
             </a-col>
-            <a-col :span="6"></a-col>
+            <a-col :span="6">
+              <a-form-item v-if="purchaseBySaleFlag" :labelCol="labelCol" :wrapperCol="wrapperCol" label="关联订单">
+                <a @click="myHandleDetail(model.linkNumber)">{{model.linkNumber}}</a>
+              </a-form-item>
+            </a-col>
           </a-row>
           <div :style="tableWidth">
             <a-table
@@ -919,7 +923,7 @@
 <script>
   import pick from 'lodash.pick'
   import { getAction } from '@/api/manage'
-  import { findBillDetailByNumber, getPlatformConfigByKey} from '@/api/api'
+  import { findBillDetailByNumber, getPlatformConfigByKey, getCurrentSystemConfig} from '@/api/api'
   import { getMpListShort } from "@/utils/util"
   import BillPrintIframe from './BillPrintIframe'
   import JUpload from '@/components/jeecg/JUpload'
@@ -939,6 +943,7 @@
         billType: '',
         billPrintFlag: false,
         fileList: [],
+        purchaseBySaleFlag: false,
         tableWidth: {
           'width': '1550px'
         },
@@ -1287,6 +1292,20 @@
         if(record.status === '3') {
           //部分采购|部分销售的时候显示全部列
           this.columns = this.defColumns
+        } else if(record.purchaseStatus === '3') {
+          //将已出库的标题转为已采购，针对销售订单转采购订单的场景
+          let currentCol = []
+          for(let i=0; i<this.defColumns.length; i++){
+            let info = {}
+            info.title = this.defColumns[i].title
+            info.dataIndex = this.defColumns[i].dataIndex
+            info.width = this.defColumns[i].width
+            if(this.defColumns[i].dataIndex === 'finishNumber') {
+              info.title = '已采购'
+            }
+            currentCol.push(info)
+          }
+          this.columns = currentCol
         } else {
           let currentCol = []
           for(let i=0; i<this.defColumns.length; i++){
@@ -1321,6 +1340,13 @@
           }
         })
       },
+      getSystemConfig() {
+        getCurrentSystemConfig().then((res) => {
+          if(res.code === 200 && res.data){
+            this.purchaseBySaleFlag = res.data.purchaseBySaleFlag==='1'?true:false
+          }
+        })
+      },
       show(record, type) {
         this.billType = type
         //附件下载
@@ -1336,13 +1362,21 @@
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'id'))
         });
+        let showType = 'basic'
+        if(record.status === '3') {
+          showType = 'basic'
+        } else if(record.purchaseStatus === '3') {
+          showType = 'purchase'
+        }
         let params = {
           headerId: this.model.id,
-          mpList: getMpListShort(Vue.ls.get('materialPropertyList'))  //扩展属性
+          mpList: getMpListShort(Vue.ls.get('materialPropertyList')),  //扩展属性
+          linkType: showType
         }
         let url = this.readOnly ? this.url.detailList : this.url.detailList;
         this.requestSubTableData(record, type, url, params);
         this.initPlatform()
+        this.getSystemConfig()
       },
       requestSubTableData(record, type, url, params, success) {
         this.loading = true

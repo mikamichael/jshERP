@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import {getAction } from '@/api/manage'
+import { FormTypes } from '@/utils/JEditableTableUtil'
 import {findBySelectSup, findBySelectCus, findBySelectRetail, getUserList, getAccount} from '@/api/api'
 
 export const BillListMixin = {
@@ -9,7 +10,7 @@ export const BillListMixin = {
       cusList: [],
       retailList: [],
       userList: [],
-      accountList: []
+      accountList: [],
     }
   },
   computed: {
@@ -32,17 +33,29 @@ export const BillListMixin = {
   methods: {
     myHandleAdd() {
       this.$refs.modalForm.action = "add";
+      if(this.btnEnableList.indexOf(2)===-1) {
+        this.$refs.modalForm.isCanCheck = false
+      }
       this.handleAdd();
     },
     myHandleCopyAdd(record) {
       this.$refs.modalForm.action = "copyAdd";
+      if(this.btnEnableList.indexOf(2)===-1) {
+        this.$refs.modalForm.isCanCheck = false
+      }
       this.$refs.modalForm.edit(record);
       this.$refs.modalForm.title = "复制新增";
       this.$refs.modalForm.disableSubmit = false;
+      //开启明细的编辑模式
+      this.$refs.modalForm.rowCanEdit = true
+      this.$refs.modalForm.materialTable.columns[1].type = FormTypes.popupJsh
     },
     myHandleEdit(record) {
       if(record.status === '0') {
         this.$refs.modalForm.action = "edit";
+        if(this.btnEnableList.indexOf(2)===-1) {
+          this.$refs.modalForm.isCanCheck = false
+        }
         this.handleEdit(record);
       } else {
         this.$message.warning("抱歉，只有未审核的单据才能编辑！")
@@ -138,6 +151,6 @@ export const BillListMixin = {
           this.accountList = list
         }
       })
-    }
+    },
   }
 }

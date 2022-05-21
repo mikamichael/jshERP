@@ -127,6 +127,11 @@
               <a-tag v-if="status == '2'" color="cyan">完成销售</a-tag>
               <a-tag v-if="status == '3'" color="blue">部分销售</a-tag>
             </template>
+            <template slot="customRenderPurchaseStatus" slot-scope="purchaseStatus">
+              <a-tag v-if="purchaseStatus == '0'" color="red">未采购</a-tag>
+              <a-tag v-if="purchaseStatus == '2'" color="cyan">完成采购</a-tag>
+              <a-tag v-if="purchaseStatus == '3'" color="blue">部分采购</a-tag>
+            </template>
           </a-table>
         </div>
         <!-- table区域-end -->
@@ -142,6 +147,7 @@
   import BillDetail from './dialog/BillDetail'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { BillListMixin } from './mixins/BillListMixin'
+  import { getCurrentSystemConfig } from '@/api/api'
   import JDate from '@/components/jeecg/JDate'
   import Vue from 'vue'
   export default {
@@ -208,6 +214,9 @@
           { title: '状态', dataIndex: 'status', width: 70, align: "center",
             scopedSlots: { customRender: 'customRenderStatus' }
           },
+          { title: '采购进度', dataIndex: 'purchaseStatus', width: 70, align: "center",
+            scopedSlots: { customRender: 'customRenderPurchaseStatus' }
+          },
           {
             title: '操作',
             dataIndex: 'action',
@@ -226,6 +235,7 @@
     created() {
       this.initCustomer()
       this.initUser()
+      this.getSystemConfig()
     },
     computed: {
     },
@@ -244,7 +254,36 @@
         } else {
           this.$message.warning("抱歉，只有未审核的单据才能删除！")
         }
-      }
+      },
+      getSystemConfig() {
+        getCurrentSystemConfig().then((res) => {
+          if(res.code === 200 && res.data){
+            let purchaseBySaleFlag = res.data.purchaseBySaleFlag
+            let statusIndex = 0
+            for(let i=0; i<this.columns.length; i++){
+              if(this.columns[i].dataIndex === 'purchaseStatus') {
+                statusIndex = i
+              }
+            }
+            if(purchaseBySaleFlag === "0") {
+              if(statusIndex>0) {
+                this.columns.splice(statusIndex, 1)
+              }
+            } else {
+              if(statusIndex===0) {
+                let purchaseStatusObj = { title: '采购进度', dataIndex: 'purchaseStatus', width: 70, align: "center",
+                  scopedSlots: { customRender: 'customRenderPurchaseStatus' }
+                }
+                this.columns.splice(8, 0, purchaseStatusObj)
+              }
+            }
+          }
+        })
+      },
+      searchQuery() {
+        this.loadData(1)
+        this.getSystemConfig()
+      },
     }
   }
 </script>

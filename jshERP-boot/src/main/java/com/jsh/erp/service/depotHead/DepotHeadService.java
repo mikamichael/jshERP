@@ -314,12 +314,29 @@ public class DepotHeadService {
                         BusinessConstants.SUB_TYPE_REPLAY.equals(depotHead.getSubType()))) {
                         String status = BusinessConstants.BILLS_STATUS_AUDIT;
                         //查询除当前单据之外的关联单据列表
-                        List<DepotHead> exceptCurrentList = getListByLinkNumberExceptCurrent(depotHead.getLinkNumber(), depotHead.getNumber());
+                        List<DepotHead> exceptCurrentList = getListByLinkNumberExceptCurrent(depotHead.getLinkNumber(), depotHead.getNumber(), depotHead.getType());
                         if(exceptCurrentList!=null && exceptCurrentList.size()>0) {
                             status = BusinessConstants.BILLS_STATUS_SKIPING;
                         }
                         DepotHead dh = new DepotHead();
                         dh.setStatus(status);
+                        DepotHeadExample example = new DepotHeadExample();
+                        example.createCriteria().andNumberEqualTo(depotHead.getLinkNumber());
+                        depotHeadMapper.updateByExampleSelective(dh, example);
+                    }
+                }
+                //将关联的销售订单单据置为未采购状态-针对销售订单转采购订单的情况
+                if(StringUtil.isNotEmpty(depotHead.getLinkNumber())){
+                    if(BusinessConstants.DEPOTHEAD_TYPE_OTHER.equals(depotHead.getType()) &&
+                            BusinessConstants.SUB_TYPE_PURCHASE_ORDER.equals(depotHead.getSubType())) {
+                        DepotHead dh = new DepotHead();
+                        //获取分批操作后单据的商品和商品数量（汇总）
+                        List<DepotItemVo4MaterialAndSum> batchList = depotItemMapperEx.getBatchBillDetailMaterialSum(depotHead.getLinkNumber(), depotHead.getType());
+                        if(batchList.size()>0) {
+                            dh.setPurchaseStatus(BusinessConstants.PURCHASE_STATUS_SKIPING);
+                        } else {
+                            dh.setPurchaseStatus(BusinessConstants.PURCHASE_STATUS_UN_AUDIT);
+                        }
                         DepotHeadExample example = new DepotHeadExample();
                         example.createCriteria().andNumberEqualTo(depotHead.getLinkNumber());
                         depotHeadMapper.updateByExampleSelective(dh, example);
@@ -525,11 +542,7 @@ public class DepotHeadService {
                     }
                     if (type.equals("采购入库")) {
                         allPrice = p2.subtract(p1);
-                    } else if (type.equals("销售退货入库")) {
-                        allPrice = p2.subtract(p1);
                     } else if (type.equals("销售出库")) {
-                        allPrice = p1.subtract(p2);
-                    } else if (type.equals("采购退货出库")) {
                         allPrice = p1.subtract(p2);
                     } else if (type.equals("收款")) {
                         allPrice = BigDecimal.ZERO.subtract(p1);
@@ -674,9 +687,9 @@ public class DepotHeadService {
      * @return
      * @throws Exception
      */
-    public List<DepotHead> getListByLinkNumberExceptCurrent(String linkNumber, String number)throws Exception {
+    public List<DepotHead> getListByLinkNumberExceptCurrent(String linkNumber, String number, String type)throws Exception {
         DepotHeadExample example = new DepotHeadExample();
-        example.createCriteria().andLinkNumberEqualTo(linkNumber).andNumberNotEqualTo(number)
+        example.createCriteria().andLinkNumberEqualTo(linkNumber).andNumberNotEqualTo(number).andTypeEqualTo(type)
                 .andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
         return depotHeadMapper.selectByExample(example);
     }
@@ -712,7 +725,10 @@ public class DepotHeadService {
         User userInfo=userService.getCurrentUser();
         depotHead.setCreator(userInfo==null?null:userInfo.getId());
         depotHead.setCreateTime(new Timestamp(System.currentTimeMillis()));
-        depotHead.setStatus(BusinessConstants.BILLS_STATUS_UN_AUDIT);
+        if(StringUtil.isEmpty(depotHead.getStatus())) {
+            depotHead.setStatus(BusinessConstants.BILLS_STATUS_UN_AUDIT);
+        }
+        depotHead.setPurchaseStatus(BusinessConstants.BILLS_STATUS_UN_AUDIT);
         depotHead.setPayType(depotHead.getPayType()==null?"现付":depotHead.getPayType());
         if(StringUtil.isNotEmpty(depotHead.getAccountIdList())){
             depotHead.setAccountIdList(depotHead.getAccountIdList().replace("[", "").replace("]", "").replaceAll("\"", ""));
